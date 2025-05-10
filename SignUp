@@ -1,0 +1,175 @@
+import React, { useState } from 'react';
+import { Link } from "react-router-dom";
+import axios from 'axios';
+import { FaUser, FaEnvelope, FaPhone, FaLock } from 'react-icons/fa';
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+
+const SignUp = () => {
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [phone, setPhone] = useState("");
+
+    const [errors, setErrors] = useState({});
+    const [success, setSuccess] = useState("");
+    const [loading, setLoading] = useState("");
+    const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!username.trim()) newErrors.username = "Username is required.";
+        if (!email.trim()) newErrors.email = "Email is required.";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Invalid email format.";
+        if (!password) newErrors.password = "Password is required.";
+        else if (password.length < 6) newErrors.password = "Password must be at least 6 characters.";
+        if (!phone.trim()) newErrors.phone = "Phone number is required.";
+        else if (!/^[0-9]{10,15}$/.test(phone)) newErrors.phone = "Phone number must be 10–15 digits.";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const submit = async (e) => {
+        e.preventDefault();
+        setError("");
+        setSuccess("");
+
+        if (!validateForm()) return;
+
+        setLoading("Processing your data... 🍅");
+
+        try {
+            const formData = new FormData();
+            formData.append("username", username);
+            formData.append("email", email);
+            formData.append("password", password);
+            formData.append("phone", phone);
+
+            const response = await axios.post("https://stephanie123.pythonanywhere.com/api/signup", formData);
+            setLoading("");
+            setSuccess(`🎉 ${response.data.message || "Signup successful!"}`);
+
+            setUsername("");
+            setEmail("");
+            setPassword("");
+            setPhone("");
+            setErrors({});
+        } catch (err) {
+            setLoading("");
+            setError(`❌ ${err.response?.data?.message || err.message}`);
+        }
+    };
+
+    return (
+        <div className="container py-5">
+            <div className="row justify-content-center">
+                <div className="col-md-7 col-lg-6">
+                    <div className="card shadow-lg border-0 p-4 rounded-4">
+                        <h2 className="text-center mb-4 text-success fw-bold">🌽 Join Stephanie-Vegetables</h2>
+
+                        {loading && (
+                            <div className="alert alert-info text-center rounded-pill py-2">
+                                {loading}
+                            </div>
+                        )}
+                        {error && (
+                            <div className="alert alert-danger text-center rounded-pill py-2 fw-semibold">
+                                {error}
+                            </div>
+                        )}
+                        {success && (
+                            <div className="alert alert-success text-center rounded-pill py-2 fw-semibold">
+                                {success}
+                            </div>
+                        )}
+
+                        <form onSubmit={submit} noValidate>
+                            {/* Username */}
+                            <div className="mb-3">
+                                <div className="input-group shadow-sm">
+                                    <span className="input-group-text bg-success text-white"><FaUser /></span>
+                                    <input
+                                        type="text"
+                                        className={`form-control ${errors.username ? "is-invalid" : ""}`}
+                                        placeholder="Enter username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
+                                    {errors.username && <div className="invalid-feedback">{errors.username}</div>}
+                                </div>
+                            </div>
+
+                            {/* Email */}
+                            <div className="mb-3">
+                                <div className="input-group shadow-sm">
+                                    <span className="input-group-text bg-success text-white"><FaEnvelope /></span>
+                                    <input
+                                        type="email"
+                                        className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                                        placeholder="Enter email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                    {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                                </div>
+                            </div>
+
+                            {/* Password */}
+                            <div className="mb-3">
+                                <div className="input-group shadow-sm">
+                                    <span className="input-group-text bg-warning text-dark"><FaLock /></span>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                                        placeholder="Enter password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                    <span
+                                        className="input-group-text bg-light"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+                                    </span>
+                                    {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                                </div>
+                            </div>
+
+                            {/* Phone */}
+                            <div className="mb-4">
+                                <div className="input-group shadow-sm">
+                                    <span className="input-group-text bg-info text-white"><FaPhone /></span>
+                                    <input
+                                        type="tel"
+                                        className={`form-control ${errors.phone ? "is-invalid" : ""}`}
+                                        placeholder="Enter phone number"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                    />
+                                    {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
+                                </div>
+                            </div>
+
+                            {/* Submit */}
+                            <div className="d-grid mb-3">
+                                <button type="submit" className="btn btn-success btn-lg fw-bold shadow-sm">
+                                    <FaUser className="me-2" /> Sign Up
+                                </button>
+                            </div>
+                        </form>
+
+                        <div className="text-center mt-2 text-muted">
+                            Already have an account?{" "}
+                            <Link to="/SignIn" className="text-decoration-none text-success fw-semibold">
+                                Sign In
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default SignUp;
