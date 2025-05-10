@@ -1,0 +1,123 @@
+import React from 'react';
+
+const Carousel = () => {
+  return (
+    <div>
+      <section className="row">
+        <div className="col-md-12">
+          {/* Carousel */}
+          <div
+            id="mycarousel"
+            className="carousel slide"
+            data-bs-ride="carousel"
+          >
+            {/* Carousel inner */}
+            <div className="carousel-inner">
+              {/* Image 1 */}
+              <div className="carousel-item active">
+                <img
+                  src="/images/Carousel1.jpg"
+                  alt="Carousel1"
+                  className="d-block w-100"
+                  width={'500px'}
+                  height={'500px'}
+                />
+              </div>
+
+              {/* Image 2 */}
+              <div className="carousel-item">
+                <img
+                  src="/images/Carousel2.jpg"
+                  alt="Carousel2"
+                  className="d-block w-100"
+                  width={'500px'}
+                  height={'500px'}
+                />
+              </div>
+
+              {/* Image 3 */}
+              <div className="carousel-item">
+                <img
+                  src="/images/Carousel3.jpg"
+                  alt="Carousel3"
+                  className="d-block w-100"
+                  width={'500px'}
+                  height={'500px'}
+                />
+              </div>
+
+              {/* Image 4 */}
+              <div className="carousel-item">
+                <img
+                  src="/images/Carousel4.jpg"
+                  alt="Carousel4"
+                  className="d-block w-100"
+                  width={'500px'}
+                  height={'500px'}
+                />
+              </div>
+
+              {/* Image 5 */}
+              <div className="carousel-item">
+                <img
+                  src="/images/carousel5.jpg"
+                  alt="carousel5"
+                  className="d-block w-100"
+                  width={'500px'}
+                  height={'500px'}
+                />
+              </div>
+
+              {/* Image 6 */}
+              <div className="carousel-item">
+                <img
+                  src="/images/carousel6.jpg"
+                  alt="carousel6"
+                  className="d-block w-100"
+                  width={'500px'}
+                  height={'500px'}
+                />
+              </div>
+
+              {/* Image 7 */}
+              <div className="carousel-item">
+                <img
+                  src="/images/carousel7.jpg"
+                  alt="carousel7"
+                  className="d-block w-100"
+                  width={'500px'}
+                  height={'500px'}
+                />
+              </div>
+            </div>
+
+            {/* Carousel Controls */}
+            <a
+              href="#mycarousel"
+              className="carousel-control-prev"
+              data-bs-slide="prev"
+            >
+              <span
+                className="carousel-control-prev-icon bg-dark"
+                style={{ borderRadius: '50%' }}
+              ></span>
+            </a>
+
+            <a
+              href="#mycarousel"
+              className="carousel-control-next"
+              data-bs-slide="next"
+            >
+              <span
+                className="carousel-control-next-icon bg-dark"
+                style={{ borderRadius: '50%' }}
+              ></span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Carousel;
