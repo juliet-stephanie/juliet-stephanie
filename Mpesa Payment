@@ -1,0 +1,124 @@
+import axios from "axios";
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
+
+const MpesaPayment = () => {
+  const { product } = useLocation().state || {};
+
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setMessage("⏳ Please wait...");
+
+    try {
+      const formData = new FormData();
+      formData.append("phone", phone);
+      formData.append("amount", product.product_cost);
+
+      await axios.post(
+        "https://stephanie123.pythonanywhere.com/api/mpesa_payment",
+        formData
+      );
+
+      setMessage("✅ Please complete the payment on your phone. Thank you!");
+      setPhone("");
+    } catch (error) {
+      setMessage("❌ Payment failed. Please try again.");
+    }
+  };
+
+  return (
+    <div className="row justify-content-center mt-5">
+      <div className="col-md-5">
+        <div
+          className="card shadow-lg p-4 border-0 rounded"
+          style={{
+            background: "linear-gradient(135deg, #e8f5e9, #f1f8e9)",
+            border: "2px solid #a5d6a7",
+          }}
+        >
+          <h3 className="text-center mb-4" style={{ color: "#388e3c" }}>
+            🧺 M-Pesa Payment
+          </h3>
+
+          <div className="mb-3">
+            <p className="fw-bold" style={{ color: "#689f38" }}>
+              🥬 Product: <span className="text-dark">{product?.product_name}</span>
+            </p>
+            <p className="fw-bold" style={{ color: "#afb42b" }}>
+              💰 Amount: <span className="text-dark">Ksh {product?.product_cost}</span>
+            </p>
+          </div>
+
+          {message && (
+            <div
+              className={`alert ${
+                message.startsWith("✅")
+                  ? "alert-success"
+                  : message.startsWith("❌")
+                  ? "alert-danger"
+                  : "alert-info"
+              }`}
+              style={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                borderRadius: "10px",
+                backgroundColor: message.startsWith("✅")
+                  ? "#dcedc8"
+                  : message.startsWith("❌")
+                  ? "#ffcdd2"
+                  : "#fff9c4",
+                color: "#2e7d32",
+              }}
+            >
+              {message}
+            </div>
+          )}
+
+          <form onSubmit={submit}>
+            <div className="mb-3">
+              <label className="form-label" style={{ color: "#00796b" }}>
+                📱 Phone Number (e.g. 2547xxxxxxx)
+              </label>
+              <input
+                type="tel"
+                className="form-control"
+                placeholder="Enter your phone number"
+                value={phone}
+                required
+                pattern="2547[0-9]{8}"
+                onChange={(e) => setPhone(e.target.value)}
+                style={{
+                  backgroundColor: "#e0f2f1",
+                  borderColor: "#004d40",
+                  borderRadius: "10px",
+                  color: "#004d40",
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn w-100"
+              style={{
+                backgroundColor: "#66bb6a",
+                color: "white",
+                border: "none",
+                borderRadius: "30px",
+                padding: "12px",
+                fontSize: "16px",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              🥦 Make Payment
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MpesaPayment;
