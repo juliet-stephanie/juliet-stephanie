@@ -1,0 +1,207 @@
+  
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const AddProduct = () => {
+  const [product_name, setProductname] = useState("");
+  const [product_cost, setProductcost] = useState("");
+  const [product_photo, setProductphoto] = useState("");
+  const [product_description, setProductdescription] = useState("");
+
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState("");
+  const [error, setError] = useState("");
+
+  const [username, setUsername] = useState(""); // For username input
+  const [isAuthorized, setIsAuthorized] = useState(false); // To check if the user is authorized
+
+  const navigate = useNavigate();
+
+  // Function to handle the submission of the product
+  const submit = async (e) => {
+    e.preventDefault();
+    setLoading("Processing your product...");
+    setSuccess("");
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("product_name", product_name);
+      formData.append("product_description", product_description);
+      formData.append("product_cost", product_cost);
+      formData.append("product_photo", product_photo);
+
+      const response = await axios.post(
+        "https://stephanie123.pythonanywhere.com/api/add_product",
+        formData
+      );
+
+      setLoading("");
+      setSuccess("✅ Product added successfully!");
+      setProductname("");
+      setProductdescription("");
+      setProductcost("");
+      setProductphoto("");
+    } catch (err) {
+      setLoading("");
+      setError("❌ Oops! Something went wrong.");
+    }
+  };
+
+  // Check if the username is correct to allow access
+  const handleNameSubmit = (e) => {
+    e.preventDefault();
+    if (username.trim().toLowerCase() === "stephanie juliet") {
+      setIsAuthorized(true);
+    } else {
+      setError("❌ Access Denied! You are not authorized to add products.");
+    }
+  };
+
+  // If the user is authorized, show the add product form
+  if (!isAuthorized) {
+    return (
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 col-lg-5 shadow-lg rounded p-4" style={{ backgroundColor: "#f8f9fa" }}>
+            <h2 className="text-center mb-4 text-primary fw-bold">👩‍💻 Admin Verification</h2>
+            {error && <div className="alert alert-danger" style={{ backgroundColor: "#f8d7da", color: "#721c24" }}>{error}</div>}
+            <form onSubmit={handleNameSubmit}>
+              <div className="mb-3">
+                <label className="form-label text-secondary fw-semibold">Enter Your Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  style={{
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #ccc",
+                    color: "#333",
+                  }}
+                />
+              </div>
+
+              <div className="d-grid">
+                <button
+                  type="submit"
+                  className="btn"
+                  style={{
+                    backgroundColor: "#007bff",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "12px",
+                    fontSize: "16px",
+                  }}
+                >
+                  Verify and Access
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show the Add Product Form after the user is authorized
+  return (
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6 col-lg-5 shadow-lg rounded p-4" style={{ backgroundColor:"#f8f9fa" }}>
+          <h2 className="text-center mb-4 text-primary fw-bold">🛍️ Add New Product</h2>
+
+          {loading && <div className="alert alert-info" style={{ backgroundColor: "#e9f7fd", color: "#0277bd" }}>{loading}</div>}
+          {success && <div className="alert alert-success" style={{ backgroundColor: "#d4edda", color: "#155724" }}>{success}</div>}
+          {error && <div className="alert alert-danger" style={{ backgroundColor: "#f8d7da", color: "#721c24" }}>{error}</div>}
+
+          <form onSubmit={submit}>
+            <div className="mb-3">
+              <label className="form-label text-secondary fw-semibold">Product Name</label>
+              <input
+                type="text"
+                className="form-control"
+                required
+                value={product_name}
+                onChange={(e) => setProductname(e.target.value)}
+                style={{
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #ccc",
+                  color: "#333",
+                }}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label text-secondary fw-semibold">Description</label>
+              <textarea
+                className="form-control"
+                rows="3"
+                required
+                value={product_description}
+                onChange={(e) => setProductdescription(e.target.value)}
+                style={{
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #ccc",
+                  color: "#333",
+                }}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label text-secondary fw-semibold">Cost (Ksh)</label>
+              <input
+                type="number"
+                className="form-control"
+                required
+                value={product_cost}
+                onChange={(e) => setProductcost(e.target.value)}
+                style={{
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #ccc",
+                  color: "#333",
+                }}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label text-secondary fw-semibold">Product Photo</label>
+              <input
+                type="file"
+                className="form-control"
+                accept="image/*"
+                onChange={(e) => setProductphoto(e.target.files[0])}
+                style={{
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #ccc",
+                }}
+              />
+            </div>
+
+            <div className="d-grid">
+              <button
+                type="submit"
+                className="btn"
+                style={{
+                  backgroundColor: "#007bff",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  fontSize: "16px",
+                }}
+              >
+                ➕ Add Product
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddProduct;
