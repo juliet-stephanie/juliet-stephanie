@@ -1,0 +1,162 @@
+import axios from "axios";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaEnvelope, FaLock, FaSignInAlt } from "react-icons/fa";
+
+const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState("");
+  const [error, setError] = useState("");
+  const [formErrors, setFormErrors] = useState({});
+
+  const navigate = useNavigate();
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+  const validateForm = () => {
+    const errors = {};
+    if (!email) {
+      errors.email = "Email is required.";
+    } else if (!emailRegex.test(email)) {
+      errors.email = "Please enter a valid email address.";
+    }
+    if (!password) {
+      errors.password = "Password is required.";
+    } else if (password.length < 6) {
+      errors.password = "Password must be at least 6 characters.";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setLoading("🌿 Processing your login...");
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+
+      const response = await axios.post(
+        "https://stephanie123.pythonanywhere.com/api/signin",
+        formData
+      );
+
+      setLoading("");
+      if (response.data.user) {
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        navigate("/");
+      } else {
+        setError(response.data.message);
+      }
+    } catch (error) {
+      setLoading("");
+      setError("❌ Something went wrong. Please try again.");
+    }
+  };
+
+  return (
+    <div className="container py-5" style={{ background: "linear-gradient(#f1f8e9, #e0f2f1)" }}>
+      <div className="row justify-content-center">
+        <div className="col-md-6 col-lg-5">
+          <div
+            className="card border-0 shadow-lg p-4 rounded-4"
+            style={{ backgroundColor: "#ffffff", borderTop: "5px solid #8bc34a" }}
+          >
+            <h2 className="text-center mb-4 fw-bold" style={{ color: "#689f38" }}>
+              🥗 Welcome Back
+            </h2>
+
+            {loading && (
+              <div className="alert alert-info text-center rounded-pill py-2">
+                {loading}
+              </div>
+            )}
+            {error && (
+              <div className="alert alert-danger text-center rounded-pill py-2">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={submit}>
+              {/* Email */}
+              <div className="mb-3">
+                <label className="form-label fw-semibold" style={{ color: "#33691e" }}>
+                  Email
+                </label>
+                <div className="input-group shadow-sm">
+                  <span className="input-group-text bg-success text-white"><FaEnvelope /></span>
+                  <input
+                    type="email"
+                    className={`form-control ${formErrors.email ? "is-invalid" : ""}`}
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={{ backgroundColor: "#f1f8e9", borderColor: "#8bc34a" }}
+                  />
+                </div>
+                {formErrors.email && (
+                  <div className="invalid-feedback d-block">{formErrors.email}</div>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="mb-3">
+                <label className="form-label fw-semibold" style={{ color: "#33691e" }}>
+                  Password
+                </label>
+                <div className="input-group shadow-sm">
+                  <span className="input-group-text bg-warning text-dark"><FaLock /></span>
+                  <input
+                    type="password"
+                    className={`form-control ${formErrors.password ? "is-invalid" : ""}`}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    style={{ backgroundColor: "#fffde7", borderColor: "#fbc02d" }}
+                  />
+                </div>
+                {formErrors.password && (
+                  <div className="invalid-feedback d-block">{formErrors.password}</div>
+                )}
+              </div>
+
+              {/* Submit */}
+              <div className="d-grid mb-3">
+                <button
+                  type="submit"
+                  className="btn fw-bold btn-lg shadow-sm"
+                  style={{
+                    backgroundColor: "#43a047",
+                    color: "white",
+                    borderRadius: "30px",
+                  }}
+                >
+                  <FaSignInAlt className="me-2" /> Sign In
+                </button>
+              </div>
+
+              <div className="text-center mt-3" style={{ color: "#6d4c41" }}>
+                Don’t have an account?{" "}
+                <Link
+                  to="/signup"
+                  className="fw-bold text-decoration-none"
+                  style={{ color: "#388e3c" }}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SignIn;
